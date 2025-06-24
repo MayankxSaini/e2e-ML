@@ -16,7 +16,7 @@ from src.utils import save_object
 
 @dataclass
 class DataTranformationConfig:
-    preprocessor_ob_file_path = os.path.join('artifact', "preprocessor.pkl")
+    preprocessor_ob_file_path = os.path.join('artifacts', "preprocessor.pkl")
 
 
 class DataTransformation:
@@ -30,7 +30,7 @@ class DataTransformation:
                 "gender",
                 "race_ethnicity",
                 "lunch",
-                "test_preparation_course"  # ✅ Fixed typo here
+                "test_preparation_course"  
             ]
 
             num_pipeline = Pipeline(

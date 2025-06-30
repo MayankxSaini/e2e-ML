@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 version: 0.2
 
 phases:
@@ -22,3 +23,29 @@ phases:
 artifacts:
   files:
     - '**/*'
+=======
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      - aws --version
+      - $(aws ecr get-login-password --region eu-north-1 | docker login --username AWS --password-stdin <your_account_id>.dkr.ecr.eu-north-1.amazonaws.com)
+      - REPOSITORY_URI=<your_account_id>.dkr.ecr.eu-north-1.amazonaws.com/<your_repo_name>
+      - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+  build:
+    commands:
+      - echo Build started on `date`
+      - echo Building the Docker image...
+      - docker build -t $REPOSITORY_URI:$IMAGE_TAG .
+  post_build:
+    commands:
+      - echo Build completed on `date`
+      - echo Pushing the Docker image...
+      - docker push $REPOSITORY_URI:$IMAGE_TAG
+
+artifacts:
+  files:
+    - '**/*'
+>>>>>>> 23702493172fdccdd55b96bdcf1da5c993685c19

@@ -28,13 +28,14 @@ jobs:
   build-and-push-ecr-image:
     name: Continuous Delivery
     needs: integration
-    runs-on: ubuntu-22.04-4core
+    runs-on: ubuntu-latest  # Changed from 22.04-4core to avoid stuck runner
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
 
       - name: Free up disk space before build
         run: |
+          echo "Cleaning up unused Docker and packages to free space"
           docker kill $(docker ps -q) || true
           docker system prune -a -f --volumes
           sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc
@@ -65,6 +66,7 @@ jobs:
           ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY_NAME }}
           IMAGE_TAG: latest
         run: |
+          echo "Building and pushing Docker image to ECR"
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
@@ -72,9 +74,9 @@ jobs:
   Continuous-Deployment:
     name: Continuous Deployment
     needs: build-and-push-ecr-image
-    runs-on: self-hosted  # Change to ubuntu-latest if NOT using EC2 runner
+    runs-on: ubuntu-latest  # CHANGED from self-hosted to ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout Code
         uses: actions/checkout@v3
 
       - name: Configure AWS credentials
@@ -86,17 +88,20 @@ jobs:
 
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
-      
+
       - name: Pull latest image
         run: |
+          echo "Pulling Docker image from ECR"
           docker pull ${{ secrets.AWS_ECR_LOGIN_URI }}/${{ secrets.ECR_REPOSITORY_NAME }}:latest
 
       - name: Stop and remove old container if running
         run: |
+          echo "Stopping and removing old container if exists"
           docker ps -q --filter "name=mltest" | grep -q . && docker stop mltest && docker rm -fv mltest || echo "No container to stop"
 
       - name: Run Docker container
         run: |
+          echo "Running new container"
           docker run -d -p 8080:8080 --ipc="host" --name=mltest \
           -e AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} \
           -e AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} \

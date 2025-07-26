@@ -84,7 +84,7 @@ e2e-ML/
 ## 🙋‍♂️ Author
 
 **Mayank Saini**  
-3rd Year B.Tech Biotechnology Student, DTU  
+Final Year B.Tech Student, DTU  
 LinkedIn: https://www.linkedin.com/in/mayank-saini-b95ba1351  
 
 

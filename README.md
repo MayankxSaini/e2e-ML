@@ -86,7 +86,7 @@ e2e-ML/
 **Mayank Saini**  
 3rd Year B.Tech Biotechnology Student, DTU  
 LinkedIn: https://www.linkedin.com/in/mayank-saini-b95ba1351  
-GitHub: https://github.com/MayankxSaini
+
 
 ## 📬 Feedback / Collaboration
 
